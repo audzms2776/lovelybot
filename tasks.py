@@ -1,27 +1,32 @@
 from microsoftbotframework import ReplyToActivity
 import requests
+import json
+import datetime
 
+
+# def echo_response(message):
+#     # if message["type"] == "message":
+#     #     ReplyToActivity(fill=message,
+#     #                     text=message["text"]).send()
 
 def echo_response(message):
     if message["type"] == "message":
-        ReplyToActivity(fill=message,
-                        text=message["text"]).send()
+        if message['text'] == '비트 코인 시세':
+            url = "https://api.korbit.co.kr/v1/ticker"
 
-# def echo_response(message):
-#     if message["type"] == "message":
-#         if message['text'] == '비트 코인 시세':
-#             url = "https://api.korbit.co.kr/v1/ticker/detailed"
-#
-#             headers = {
-#                 'cache-control': "no-cache",
-#                 'postman-token': "3cb8f5cc-b1b2-48de-9086-389941e47ab1"
-#             }
-#
-#             response = requests.request("GET", url, headers=headers)
-#
-#             print(response.text)
-#             ReplyToActivity(fill=message,
-#                             text=response.text).send()
-#         else:
-#             ReplyToActivity(fill=message,
-#                             text=message).send()
+            response = requests.request("GET", url)
+
+            jj = json.loads(response.text)
+
+            time_s = datetime.datetime.fromtimestamp(
+                jj['timestamp'] // 1000
+            ).strftime('%Y-%m-%d %H:%M:%S')
+
+            result_text = '최종 시간: %s\n 최종 가격: %s \n' % (time_s, jj['last'])
+            print(result_text)
+
+            ReplyToActivity(fill=message,
+                            text=result_text).send()
+        else:
+            ReplyToActivity(fill=message,
+                            text=message).send()
