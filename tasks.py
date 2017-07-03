@@ -29,4 +29,4 @@ def echo_response(message):
                             text=result_text).send()
         else:
             ReplyToActivity(fill=message,
-                            text=message + '@@').send()
+                            text=str(message) + '@@').send()
