@@ -14,11 +14,19 @@ def echo_response(message):
             attach_data = message['attachments'][0]
 
             print(attach_data)
-            urllib.request.urlretrieve(attach_data['contentUrl'], attach_data['name'])
+            ext_type = {
+                'image/jpeg': '.jpg',
+                'image/png': '.png'
+            }
+
+            temp_file_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ext_type[
+                attach_data['contentType']]
+
+            urllib.request.urlretrieve(attach_data['contentUrl'], temp_file_name)
 
             # file size check
-            if os.path.getsize(attach_data['name']) >> 20 >= 2:
-                os.remove('./' + attach_data['name'])
+            if os.path.getsize(temp_file_name) >> 20 >= 2:
+                os.remove('./' + temp_file_name)
                 ReplyToActivity(fill=message,
                                 text='파일이 너무 큽니다. 2MB 이하만 가능합니다.').send()
                 return
@@ -28,13 +36,13 @@ def echo_response(message):
             client_id = "a1RZIb1p59TLbq3iu_un"
             client_secret = "yzvyDMQvAL"
             url = "https://openapi.naver.com/v1/vision/celebrity"
-            files = {'image': open(attach_data['name'], 'rb')}
+            files = {'image': open(temp_file_name, 'rb')}
             headers = {'X-Naver-Client-Id': client_id, 'X-Naver-Client-Secret': client_secret}
             response = requests.post(url, files=files, headers=headers)
             rescode = response.status_code
             files.clear()
 
-            os.remove('./' + attach_data['name'])
+            os.remove('./' + temp_file_name)
 
             temp_str = ''
 
