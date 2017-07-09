@@ -13,6 +13,7 @@ def echo_response(message):
         if key_list.count('attachments'):
             attach_data = message['attachments'][0]
 
+            print(attach_data)
             urllib.request.urlretrieve(attach_data['contentUrl'], attach_data['name'])
 
             # file size check
